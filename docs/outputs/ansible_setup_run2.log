@@ -19,6 +19,9 @@ skipping: [eykhmanmf]
 TASK [ssh_hardening : Key-only login for our users] ****************************
 ok: [eykhmanmf]
 
+TASK [ssh_hardening : Disable root login] **************************************
+ok: [eykhmanmf]
+
 TASK [ssh_hardening : Validate sshd configuration] *****************************
 skipping: [eykhmanmf]
 
@@ -35,12 +38,15 @@ TASK [firewall : Detect external interface] ************************************
 ok: [eykhmanmf]
 
 TASK [firewall : Allow public ports] *******************************************
-ok: [eykhmanmf] => (item=22)
 ok: [eykhmanmf] => (item=80)
 ok: [eykhmanmf] => (item=8080)
 
 TASK [firewall : Allow restricted ports only from allowed IPs] *****************
-skipping: [eykhmanmf]
+ok: [eykhmanmf] => (item=22/tcp from 193.27.19.4)
+
+TASK [firewall : Remove public SSH rule] ***************************************
+ok: [eykhmanmf] => (item=limit)
+ok: [eykhmanmf] => (item=allow)
 
 TASK [firewall : Restrict access to published Docker ports] ********************
 ok: [eykhmanmf]
@@ -83,5 +89,5 @@ TASK [docker : Install docker-compose compatibility wrapper] *******************
 ok: [eykhmanmf]
 
 PLAY RECAP *********************************************************************
-eykhmanmf                  : ok=19   changed=0    unreachable=0    failed=0    skipped=7    rescued=0    ignored=0   
+eykhmanmf                  : ok=22   changed=0    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
 

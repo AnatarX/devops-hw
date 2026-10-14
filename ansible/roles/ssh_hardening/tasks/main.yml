@@ -26,10 +26,21 @@
   register: key_only_conf
   notify: Restart ssh
 
+- name: Disable root login
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/05-no-root.conf
+    content: "PermitRootLogin no\n"
+    owner: root
+    group: root
+    mode: "0644"
+  register: no_root_conf
+  when: ssh_disable_root | bool
+  notify: Restart ssh
+
 - name: Validate sshd configuration
   ansible.builtin.command: /usr/sbin/sshd -t
   changed_when: false
-  when: key_only_conf.changed
+  when: key_only_conf.changed or no_root_conf.changed
 
 - name: Keep only our SSH key for bootstrap user
   ansible.posix.authorized_key:
