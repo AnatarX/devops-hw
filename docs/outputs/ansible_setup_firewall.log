@@ -1,0 +1,87 @@
+
+PLAY [Configure host for running containers] ***********************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [eykhmanmf]
+
+TASK [users : Create deployer user] ********************************************
+ok: [eykhmanmf]
+
+TASK [users : Add SSH key for deployer] ****************************************
+ok: [eykhmanmf]
+
+TASK [users : Allow passwordless sudo for deployer] ****************************
+ok: [eykhmanmf]
+
+TASK [ssh_hardening : Harden sshd configuration (global)] **********************
+skipping: [eykhmanmf]
+
+TASK [ssh_hardening : Key-only login for our users] ****************************
+ok: [eykhmanmf]
+
+TASK [ssh_hardening : Validate sshd configuration] *****************************
+skipping: [eykhmanmf]
+
+TASK [ssh_hardening : Keep only our SSH key for bootstrap user] ****************
+skipping: [eykhmanmf]
+
+TASK [ssh_hardening : Lock bootstrap user password] ****************************
+skipping: [eykhmanmf]
+
+TASK [firewall : Install ufw] **************************************************
+ok: [eykhmanmf]
+
+TASK [firewall : Detect external interface] ************************************
+ok: [eykhmanmf]
+
+TASK [firewall : Allow public ports] *******************************************
+changed: [eykhmanmf] => (item=22)
+changed: [eykhmanmf] => (item=80)
+changed: [eykhmanmf] => (item=8080)
+
+TASK [firewall : Allow restricted ports only from allowed IPs] *****************
+skipping: [eykhmanmf]
+
+TASK [firewall : Restrict access to published Docker ports] ********************
+changed: [eykhmanmf]
+
+TASK [firewall : Enable ufw with default deny incoming] ************************
+ok: [eykhmanmf]
+
+TASK [docker : Install prerequisites] ******************************************
+ok: [eykhmanmf]
+
+TASK [docker : Create apt keyrings directory] **********************************
+ok: [eykhmanmf]
+
+TASK [docker : Download Docker GPG key] ****************************************
+ok: [eykhmanmf]
+
+TASK [docker : Add Docker apt repository] **************************************
+ok: [eykhmanmf]
+
+TASK [docker : Update apt cache after adding Docker repository] ****************
+skipping: [eykhmanmf]
+
+TASK [docker : Install Docker Engine and Compose plugin] ***********************
+ok: [eykhmanmf]
+
+TASK [docker : Configure Docker daemon] ****************************************
+ok: [eykhmanmf]
+
+TASK [docker : Enable and start containerd and docker] *************************
+ok: [eykhmanmf] => (item=containerd)
+ok: [eykhmanmf] => (item=docker)
+
+TASK [docker : Add deployer to docker group] ***********************************
+ok: [eykhmanmf]
+
+TASK [docker : Install docker-compose compatibility wrapper] *******************
+ok: [eykhmanmf]
+
+RUNNING HANDLER [firewall : Reload ufw] ****************************************
+changed: [eykhmanmf]
+
+PLAY RECAP *********************************************************************
+eykhmanmf                  : ok=20   changed=3    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+

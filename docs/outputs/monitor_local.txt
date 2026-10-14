@@ -1,0 +1,23 @@
+$ ./scripts/monitor.sh docker
+==> Сервис docker: active
+WARN: /var/log/syslog не найден, считаем ошибки по journald (приоритет err и выше)
+==> Ошибок в журнале за последний час: 204
+[exit code: 0]
+
+$ ./scripts/monitor.sh avahi-daemon
+==> Сервис avahi-daemon: inactive
+==> Последние 10 строк лога (journalctl -u avahi-daemon):
+WARN: лог сервиса пуст или недоступен (попробуйте запустить через sudo)
+WARN: /var/log/syslog не найден, считаем ошибки по journald (приоритет err и выше)
+==> Ошибок в журнале за последний час: 204
+[exit code: 1]
+
+$ ./scripts/monitor.sh nosuchservice
+ERROR: сервис 'nosuchservice' не найден
+[exit code: 2]
+
+$ ./scripts/monitor.sh 
+Usage: monitor.sh <service>
+Example: monitor.sh docker
+[exit code: 2]
+

@@ -1,0 +1,6 @@
+# Скопируйте в terraform.tfvars и при необходимости поменяйте значения
+server_ip            = "111.88.162.121"
+docker_ssh_user      = "deployer"
+admin_user           = "student"
+ssh_private_key_path = "~/.ssh/id_ed25519"
+web_port             = 8080

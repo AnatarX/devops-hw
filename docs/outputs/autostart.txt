@@ -1,0 +1,8 @@
+deployer@eykhmanmf:~$ systemctl is-enabled docker containerd
+enabled
+enabled
+
+deployer@eykhmanmf:~$ docker inspect -f '{{.Name}} restart={{.HostConfig.RestartPolicy.Name}}' $(docker ps -q)
+/devops-hw1-nginx restart=unless-stopped
+/app-nginx-1 restart=unless-stopped
+/app-app-1 restart=unless-stopped

@@ -1,0 +1,21 @@
+
+PLAY [Deploy multi-service environment] ****************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [eykhmanmf]
+
+TASK [app : Create application directory] **************************************
+ok: [eykhmanmf]
+
+TASK [app : Copy Docker Compose project] ***************************************
+ok: [eykhmanmf]
+
+TASK [app : Start containers (docker compose up -d)] ***************************
+ok: [eykhmanmf]
+
+TASK [app : Check that proxy serves the page] **********************************
+ok: [eykhmanmf]
+
+PLAY RECAP *********************************************************************
+eykhmanmf                  : ok=5    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
