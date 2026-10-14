@@ -85,3 +85,4 @@ docker-compose ps и curl:
 
 - terraform plan каждый раз пересоздавал сеть - задал gateway явно.
 - grep без совпадений возвращает 1, из-за pipefail скрипт падал - добавил `|| true`.
+
