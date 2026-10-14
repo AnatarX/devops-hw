@@ -1,0 +1,12 @@
+# Зеркало реестра Terraform (registry.terraform.io из РФ работает нестабильно).
+# Использование: скопировать в ~/.terraformrc
+#   или: export TF_CLI_CONFIG_FILE="$PWD/terraformrc.example"
+provider_installation {
+  network_mirror {
+    url     = "https://terraform-mirror.yandexcloud.net/"
+    include = ["registry.terraform.io/*/*"]
+  }
+  direct {
+    exclude = ["registry.terraform.io/*/*"]
+  }
+}
