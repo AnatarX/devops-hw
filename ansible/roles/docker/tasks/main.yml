@@ -1,0 +1,76 @@
+---
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name: [ca-certificates, curl, python3-debian]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: Add Docker apt repository
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: [deb]
+    uris: https://download.docker.com/linux/ubuntu
+    suites: ["{{ ansible_facts['distribution_release'] }}"]
+    components: [stable]
+    architectures: ["{{ docker_arch }}"]
+    signed_by: /etc/apt/keyrings/docker.asc
+    state: present
+  register: docker_repo
+
+- name: Update apt cache after adding Docker repository
+  ansible.builtin.apt:
+    update_cache: true
+  when: docker_repo.changed
+
+- name: Install Docker Engine and Compose plugin
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configure Docker daemon
+  ansible.builtin.template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart docker
+
+- name: Enable and start containerd and docker
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop: [containerd, docker]
+
+- name: Add deployer to docker group
+  ansible.builtin.user:
+    name: "{{ deployer_user }}"
+    groups: docker
+    append: true
+
+# docker-compose -> docker compose
+- name: Install docker-compose compatibility wrapper
+  ansible.builtin.copy:
+    dest: /usr/local/bin/docker-compose
+    content: |
+      #!/bin/sh
+      exec docker compose "$@"
+    owner: root
+    group: root
+    mode: "0755"

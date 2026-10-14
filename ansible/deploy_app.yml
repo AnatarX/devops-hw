@@ -1,0 +1,7 @@
+---
+- name: Deploy multi-service environment
+  hosts: app_servers
+  become: true
+
+  roles:
+    - app

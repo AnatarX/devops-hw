@@ -1,0 +1,71 @@
+---
+- name: Install ufw
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Detect external interface
+  ansible.builtin.set_fact:
+    external_iface: >-
+      {{ ansible_facts['interfaces']
+         | map('regex_replace', '-', '_')
+         | map('extract', ansible_facts)
+         | selectattr('ipv4', 'defined')
+         | selectattr('ipv4.address', 'equalto', ansible_host)
+         | map(attribute='device')
+         | first
+         | default(ansible_facts['default_ipv4']['interface']) }}
+
+- name: Allow public ports
+  community.general.ufw:
+    rule: "{{ 'limit' if (item == 22 and ssh_rate_limit | bool) else 'allow' }}"
+    proto: tcp
+    port: "{{ item | string }}"
+    comment: "managed by ansible"
+  loop: "{{ public_tcp_ports }}"
+
+- name: Allow restricted ports only from allowed IPs
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ item.0 | string }}"
+    from_ip: "{{ item.1 }}"
+    comment: "managed by ansible"
+  loop: "{{ restricted_tcp_ports | product(allowed_ips) | list }}"
+  loop_control:
+    label: "{{ item.0 }}/tcp from {{ item.1 }}"
+
+# docker обходит ufw
+- name: Restrict access to published Docker ports
+  ansible.builtin.blockinfile:
+    path: /etc/ufw/after.rules
+    marker: "# {mark} ANSIBLE MANAGED: DOCKER-USER"
+    block: |
+      *filter
+      :DOCKER-USER - [0:0]
+      -A DOCKER-USER -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN
+      {% for ip in allowed_ips %}
+      -A DOCKER-USER -i {{ external_iface }} -s {{ ip }} -j RETURN
+      {% endfor %}
+      -A DOCKER-USER -i {{ external_iface }} -j DROP
+      -A DOCKER-USER -j RETURN
+      COMMIT
+    state: "{{ 'present' if docker_ports_restricted | bool else 'absent' }}"
+  register: docker_user_rules
+  notify: Reload ufw
+
+- name: Flush DOCKER-USER after removing the restriction
+  ansible.builtin.iptables:
+    chain: DOCKER-USER
+    flush: true
+  when:
+    - docker_user_rules.changed
+    - not docker_ports_restricted | bool
+
+- name: Enable ufw with default deny incoming
+  community.general.ufw:
+    state: enabled
+    default: deny
+    direction: incoming

@@ -1,0 +1,10 @@
+---
+- name: Configure host for running containers
+  hosts: app_servers
+  become: true
+
+  roles:
+    - users
+    - ssh_hardening
+    - firewall
+    - docker

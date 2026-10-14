@@ -1,0 +1,23 @@
+---
+- name: Create deployer user
+  ansible.builtin.user:
+    name: "{{ deployer_user }}"
+    shell: /bin/bash
+    groups: sudo
+    append: true
+    password_lock: true
+
+- name: Add SSH key for deployer
+  ansible.posix.authorized_key:
+    user: "{{ deployer_user }}"
+    key: "{{ ssh_public_key }}"
+    exclusive: true
+
+- name: Allow passwordless sudo for deployer
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ deployer_user }}"
+    content: "{{ deployer_user }} ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: "0440"
+    validate: /usr/sbin/visudo -cf %s

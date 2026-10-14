@@ -1,0 +1,45 @@
+---
+- name: Harden sshd configuration (global)
+  ansible.builtin.template:
+    src: 01-hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/01-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/sshd -t -f %s
+  when: ssh_harden_global | bool
+  notify: Restart ssh
+
+# пароль выкл только для student и deployer
+- name: Key-only login for our users
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/10-key-only-users.conf
+    content: |
+      # Managed by Ansible (roles/ssh_hardening). Do not edit.
+      Match User {{ ssh_key_only_users | join(',') }}
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  register: key_only_conf
+  notify: Restart ssh
+
+- name: Validate sshd configuration
+  ansible.builtin.command: /usr/sbin/sshd -t
+  changed_when: false
+  when: key_only_conf.changed
+
+- name: Keep only our SSH key for bootstrap user
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ ssh_public_key }}"
+    exclusive: true
+  when: bootstrap_key_exclusive | bool
+
+- name: Lock bootstrap user password
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    password_lock: true
+  when: lock_bootstrap_password | bool

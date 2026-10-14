@@ -1,0 +1,24 @@
+deployer_user: deployer
+ssh_public_key: "{{ lookup('ansible.builtin.file', '~/.ssh/id_ed25519.pub') }}"
+
+public_tcp_ports: []
+restricted_tcp_ports: [22, 80]
+allowed_ips: [192.168.56.1]
+ssh_rate_limit: true
+docker_ports_restricted: true
+
+ssh_harden_global: true
+ssh_key_only_users: ["{{ ansible_user }}", "{{ deployer_user }}"]
+bootstrap_key_exclusive: true
+lock_bootstrap_password: true
+
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+docker_registry_mirrors:
+  - https://mirror.gcr.io
+
+app_dir: /opt/app
