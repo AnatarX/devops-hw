@@ -1,0 +1,166 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # docker_container.nginx will be created
+  + resource "docker_container" "nginx" {
+      + attach                                      = false
+      + bridge                                      = (known after apply)
+      + command                                     = (known after apply)
+      + container_logs                              = (known after apply)
+      + container_read_refresh_timeout_milliseconds = 15000
+      + entrypoint                                  = (known after apply)
+      + env                                         = (known after apply)
+      + exit_code                                   = (known after apply)
+      + hostname                                    = (known after apply)
+      + id                                          = (known after apply)
+      + image                                       = (known after apply)
+      + init                                        = (known after apply)
+      + ipc_mode                                    = (known after apply)
+      + log_driver                                  = (known after apply)
+      + logs                                        = false
+      + memory_reservation                          = 0
+      + must_run                                    = true
+      + name                                        = "devops-hw1-nginx"
+      + network_data                                = (known after apply)
+      + network_mode                                = "bridge"
+      + platform                                    = (known after apply)
+      + read_only                                   = false
+      + remove_volumes                              = true
+      + restart                                     = "unless-stopped"
+      + rm                                          = false
+      + runtime                                     = (known after apply)
+      + security_opts                               = (known after apply)
+      + shm_size                                    = (known after apply)
+      + start                                       = true
+      + stdin_open                                  = false
+      + stop_signal                                 = (known after apply)
+      + stop_timeout                                = (known after apply)
+      + tty                                         = false
+      + wait                                        = false
+      + wait_timeout                                = 60
+
+      + healthcheck {
+          + interval       = "10s"
+          + retries        = 3
+          + start_interval = "0s"
+          + start_period   = "0s"
+          + test           = [
+              + "CMD",
+              + "wget",
+              + "-q",
+              + "-O",
+              + "/dev/null",
+              + "http://127.0.0.1/",
+            ]
+          + timeout        = "3s"
+        }
+
+      + labels (known after apply)
+
+      + networks_advanced {
+          + aliases        = []
+          + driver_opts    = []
+          + link_local_ips = []
+          + name           = "devops-hw1-net"
+            # (3 unchanged attributes hidden)
+        }
+
+      + ports {
+          + external = 8080
+          + internal = 80
+          + ip       = "0.0.0.0"
+          + protocol = "tcp"
+        }
+
+      + upload {
+          + content        = <<-EOT
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="utf-8">
+                  <title>nginx by Terraform</title>
+                </head>
+                <body>
+                  <h1>nginx is working</h1>
+                  <p>Created by Terraform (kreuzwerker/docker).</p>
+                  <p>Network: devops-hw1-net &middot; volume: devops-hw1-html &middot; port: 8080</p>
+                </body>
+                </html>
+            EOT
+          + executable     = false
+          + file           = "/usr/share/nginx/html/index.html"
+            # (6 unchanged attributes hidden)
+        }
+
+      + volumes {
+          + container_path  = "/usr/share/nginx/html"
+          + volume_name     = "devops-hw1-html"
+            # (3 unchanged attributes hidden)
+        }
+    }
+
+  # docker_image.nginx will be created
+  + resource "docker_image" "nginx" {
+      + id           = (known after apply)
+      + image_id     = (known after apply)
+      + keep_locally = true
+      + name         = "nginx:1.27-alpine"
+      + repo_digest  = (known after apply)
+    }
+
+  # docker_network.web will be created
+  + resource "docker_network" "web" {
+      + driver      = "bridge"
+      + id          = (known after apply)
+      + internal    = (known after apply)
+      + ipam_driver = "default"
+      + name        = "devops-hw1-net"
+      + options     = (known after apply)
+      + scope       = (known after apply)
+
+      + ipam_config {
+          + gateway  = "172.30.0.1"
+          + subnet   = "172.30.0.0/24"
+            # (1 unchanged attribute hidden)
+        }
+    }
+
+  # docker_volume.html will be created
+  + resource "docker_volume" "html" {
+      + driver     = (known after apply)
+      + id         = (known after apply)
+      + mountpoint = (known after apply)
+      + name       = "devops-hw1-html"
+    }
+
+  # module.iam.null_resource.operator will be created
+  + resource "null_resource" "operator" {
+      + id       = (known after apply)
+      + triggers = {
+          + "host"    = "111.88.162.121"
+          + "ssh_key" = "74d1b6b972863ef9896da35a5430de73dd2a29e75b1de6ce8283b78d83eabde9"
+          + "sudoers" = "3644e00afa7983ef7bbdd7c8e1919db9d3aa5059a469ea6a017dbecd7eb20dbb"
+          + "user"    = "vm-operator"
+        }
+    }
+
+Plan: 5 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + container     = "devops-hw1-nginx"
+  + curl_command  = "curl -i http://111.88.162.121:8080"
+  + network       = "devops-hw1-net"
+  + operator_user = "vm-operator"
+  + volume        = "devops-hw1-html"
+  + web_url       = "http://111.88.162.121:8080"
+
+─────────────────────────────────────────────────────────────────────────────
+
+Saved the plan to: tfplan
+
+To perform exactly these actions, run the following command to apply:
+    terraform apply "tfplan"

@@ -1,0 +1,51 @@
+$ ssh -o PubkeyAuthentication=no student@111.88.162.121
+student@111.88.162.121: Permission denied (publickey).
+
+$ ssh -o PubkeyAuthentication=no deployer@111.88.162.121
+deployer@111.88.162.121: Permission denied (publickey).
+
+$ ssh vm-operator@111.88.162.121 sudo -l
+User vm-operator may run the following commands on eykhmanmf:
+    (root) NOPASSWD: /usr/bin/systemctl status docker,
+        /usr/bin/systemctl start docker,
+        /usr/bin/systemctl stop docker,
+        /usr/bin/systemctl restart docker,
+        /usr/bin/journalctl -u docker *,
+        /usr/bin/docker ps,
+        /usr/bin/docker compose -f /opt/app/docker-compose.yml ps,
+        /usr/bin/docker compose -f /opt/app/docker-compose.yml restart
+
+$ ssh vm-operator@111.88.162.121 sudo cat /etc/shadow
+sudo: a password is required
+
+$ ssh vm-operator@111.88.162.121 docker ps   # не в группе docker
+permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+
+$ ssh vm-operator@111.88.162.121 sudo docker ps   # разрешено
+CONTAINER ID   IMAGE               COMMAND                  CREATED          STATUS                    PORTS  
+906691556b20   65645c7bb6a0        "/docker-entrypoint.…"   17 minutes ago   Up 16 minutes (healthy)   0.0.0.0
+7eee0c64d9c8   nginx:1.27-alpine   "/docker-entrypoint.…"   25 minutes ago   Up 16 minutes             0.0.0.0
+9140635de262   nginx:1.27-alpine   "/docker-entrypoint.…"   25 minutes ago   Up 16 minutes (healthy)   80/tcp 
+
+deployer@eykhmanmf:~$ sudo ufw status verbose
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), deny (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     LIMIT IN    Anywhere                   # managed by ansible
+80/tcp                     ALLOW IN    Anywhere                   # managed by ansible
+8080/tcp                   ALLOW IN    Anywhere                   # managed by ansible
+22/tcp (v6)                LIMIT IN    Anywhere (v6)              # managed by ansible
+80/tcp (v6)                ALLOW IN    Anywhere (v6)              # managed by ansible
+8080/tcp (v6)              ALLOW IN    Anywhere (v6)              # managed by ansible
+
+deployer@eykhmanmf:~$ sudo ss -tlnp | grep -v 127.0.0   # что слушает снаружи
+State   Local         Peer
+LISTEN  0.0.0.0:22    users:(("sshd",pid=180320,fd=3),("systemd",pid=1,fd=121))
+LISTEN  0.0.0.0:80    users:(("docker-proxy",pid=189049,fd=8))
+LISTEN  0.0.0.0:8080  users:(("docker-proxy",pid=188999,fd=8))
+LISTEN  [::]:22       users:(("sshd",pid=180320,fd=4),("systemd",pid=1,fd=122))
+LISTEN  [::]:80       users:(("docker-proxy",pid=189061,fd=8))

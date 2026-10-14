@@ -1,0 +1,35 @@
+module.iam.null_resource.operator: Creating...
+docker_volume.html: Creating...
+module.iam.null_resource.operator: Provisioning with 'file'...
+docker_network.web: Creating...
+docker_image.nginx: Creating...
+docker_volume.html: Creation complete after 1s [id=devops-hw1-html]
+docker_image.nginx: Creation complete after 1s [id=sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10nginx:1.27-alpine]
+module.iam.null_resource.operator: Provisioning with 'remote-exec'...
+module.iam.null_resource.operator (remote-exec): Connecting to remote host via SSH...
+module.iam.null_resource.operator (remote-exec):   Host: 111.88.162.121
+module.iam.null_resource.operator (remote-exec):   User: student
+module.iam.null_resource.operator (remote-exec):   Password: false
+module.iam.null_resource.operator (remote-exec):   Private key: true
+module.iam.null_resource.operator (remote-exec):   Certificate: false
+module.iam.null_resource.operator (remote-exec):   SSH Agent: false
+module.iam.null_resource.operator (remote-exec):   Checking Host Key: false
+module.iam.null_resource.operator (remote-exec):   Target Platform: unix
+docker_network.web: Creation complete after 2s [id=b00a20167be4fc09884196c3c66957a2c94aeb7965052a6fc8e8a93879bf528c]
+docker_container.nginx: Creating...
+module.iam.null_resource.operator (remote-exec): Connected!
+module.iam.null_resource.operator (remote-exec): passwd: password changed.
+module.iam.null_resource.operator (remote-exec): /tmp/operator.sudoers: parsed OK
+docker_container.nginx: Creation complete after 2s [id=80b6f0603d79c3dcff37e9205daf13584bccb2747b178029840b5d2306012e10]
+module.iam.null_resource.operator: Creation complete after 4s [id=2241878877310011139]
+
+Apply complete! Resources: 5 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+container = "devops-hw1-nginx"
+curl_command = "curl -i http://111.88.162.121:8080"
+network = "devops-hw1-net"
+operator_user = "vm-operator"
+volume = "devops-hw1-html"
+web_url = "http://111.88.162.121:8080"
