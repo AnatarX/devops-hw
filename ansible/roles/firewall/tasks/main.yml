@@ -37,6 +37,16 @@
   loop_control:
     label: "{{ item.0 }}/tcp from {{ item.1 }}"
 
+# убрать открытый всем 22, если он теперь только с allowed_ips
+- name: Remove public SSH rule
+  community.general.ufw:
+    rule: "{{ item }}"
+    proto: tcp
+    port: "22"
+    delete: true
+  loop: [limit, allow]
+  when: 22 not in public_tcp_ports
+
 # docker обходит ufw
 - name: Restrict access to published Docker ports
   ansible.builtin.blockinfile:

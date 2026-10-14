@@ -1,9 +1,8 @@
 ansible_user: student
 
-# 22 с limit
-public_tcp_ports: [22, 80, 8080]
-restricted_tcp_ports: []
-allowed_ips: []
+public_tcp_ports: [80, 8080]
+restricted_tcp_ports: [22]
+allowed_ips: [193.27.19.4]
 docker_ports_restricted: false
 
 ssh_harden_global: false

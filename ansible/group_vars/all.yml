@@ -8,6 +8,7 @@ ssh_rate_limit: true
 docker_ports_restricted: true
 
 ssh_harden_global: true
+ssh_disable_root: true
 ssh_key_only_users: ["{{ ansible_user }}", "{{ deployer_user }}"]
 bootstrap_key_exclusive: true
 lock_bootstrap_password: true
